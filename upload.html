@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Snippet - Admin</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="index.html">Home</a>
+            <a href="upload.html" class="active">Upload</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="loginForm" style="max-width: 400px; margin: 80px auto; text-align: center;">
+            <h2 style="margin-bottom: 20px;">Admin Access</h2>
+            <input type="password" id="adminPass" placeholder="Masukkan Password Admin">
+            <button onclick="checkAuth()" class="btn-primary">Login</button>
+        </div>
+
+        <div id="uploadPanel" style="display: none;">
+            <h2 style="margin-bottom: 20px;">Upload Snippet Baru</h2>
+            <div class="form-group">
+                <input type="text" id="title" placeholder="Judul (Contoh: Dolphin AI Scraper)">
+                <input type="text" id="tags" placeholder="Tags (Contoh: js, nodejs, web)">
+                <textarea id="code" placeholder="Tempel kode di sini..." rows="12" style="font-family: monospace;"></textarea>
+                <button onclick="handleUpload()" class="btn-primary">Publish ke Database</button>
+                <button onclick="logout()" style="background:none; border:none; color:#ff4d4d; margin-top:15px; cursor:pointer; width:100%; font-size: 13px;">Logout Admin</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
