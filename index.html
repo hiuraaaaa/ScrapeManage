@@ -59,23 +59,48 @@
         }
 
         .menu-trigger {
-            background: none;
-            border: none;
-            color: var(--text-main);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            transition: 0.3s;
+            background: none; border: none; color: var(--text-main);
+            cursor: pointer; display: flex; align-items: center; gap: 15px;
         }
 
         .brand-name {
-            font-weight: 800;
-            letter-spacing: -1px;
-            font-size: 1.2rem;
+            font-weight: 800; letter-spacing: -1px; font-size: 1.2rem;
             background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        /* --- Search Bar Section --- */
+        .search-container {
+            position: relative;
+            margin-bottom: 30px;
+            max-width: 500px;
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+            width: 18px;
+        }
+
+        #search-input {
+            width: 100%;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px 15px 12px 45px;
+            color: white;
+            font-family: var(--font-main);
+            outline: none;
+            transition: 0.3s;
+        }
+
+        #search-input:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
         }
 
         /* --- Sidebar Navigation --- */
@@ -95,30 +120,18 @@
         .sidebar.active { transform: translateX(var(--sidebar-w)); }
 
         .sidebar-nav { display: flex; flex-direction: column; gap: 10px; }
-
         .sidebar-nav a {
-            color: var(--text-dim);
-            text-decoration: none;
-            padding: 12px 15px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 500;
-            transition: 0.2s;
+            color: var(--text-dim); text-decoration: none; padding: 12px 15px;
+            border-radius: 10px; display: flex; align-items: center; gap: 12px; transition: 0.2s;
         }
-
         .sidebar-nav a:hover, .sidebar-nav a.active {
-            color: var(--primary);
-            background: rgba(0, 243, 255, 0.05);
+            color: var(--primary); background: rgba(0, 243, 255, 0.05);
         }
 
         /* Overlay */
         .overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            opacity: 0; pointer-events: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); opacity: 0; pointer-events: none;
             z-index: 1000; transition: 0.3s;
         }
         .overlay.active { opacity: 1; pointer-events: auto; }
@@ -131,7 +144,7 @@
         }
 
         header {
-            margin-bottom: 40px;
+            margin-bottom: 25px;
             border-left: 3px solid var(--primary);
             padding-left: 20px;
         }
@@ -139,7 +152,7 @@
         header h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 4px; }
         header p { color: var(--text-dim); font-size: 0.85rem; }
 
-        /* --- Card Grid (Professional Compact) --- */
+        /* --- Card Grid --- */
         #snippet-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -162,6 +175,8 @@
             border-color: var(--primary);
             transform: translateY(-4px);
         }
+
+        .snippet-card.hidden { display: none; }
 
         .snippet-card h3 {
             font-size: 0.95rem; margin-bottom: 12px;
@@ -192,7 +207,6 @@
             color: var(--text-dim); padding: 6px; border-radius: 8px; cursor: pointer;
         }
 
-        /* Loading Skeletons */
         .skeleton {
             height: 180px; background: #111; border-radius: 12px;
             animation: pulse 1.5s infinite;
@@ -229,6 +243,11 @@
             <p>Accessing decentralized snippet vault...</p>
         </header>
 
+        <div class="search-container">
+            <i data-lucide="search"></i>
+            <input type="text" id="search-input" placeholder="Search snippets by title or tags..." onkeyup="filterSnippets()">
+        </div>
+
         <div id="snippet-list">
             <div class="skeleton"></div>
             <div class="skeleton"></div>
@@ -244,6 +263,23 @@
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
+        }
+
+        // Fitur Filter Search
+        function filterSnippets() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const cards = document.querySelectorAll('.snippet-card');
+
+            cards.forEach(card => {
+                const title = card.querySelector('h3').innerText.toLowerCase();
+                const tags = card.querySelector('.tags') ? card.querySelector('.tags').innerText.toLowerCase() : "";
+                
+                if (title.includes(query) || tags.includes(query)) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
         }
     </script>
 </body>
