@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Vault - Home</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="index.html" class="active">Home</a>
+            <a href="upload.html">Upload</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header style="margin-bottom: 40px;">
+            <h1 style="font-size: 32px; letter-spacing: -1px;">Code Library</h1>
+            <p style="color: var(--text-dim);">Daftar snippet kode yang telah diunggah.</p>
+        </header>
+
+        <div id="snippet-list">
+            <p style="color: #444; text-align: center; margin-top: 50px;">Memuat data dari database...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
