@@ -9,7 +9,6 @@
 </head>
 <body>
     <div class="grid-bg"></div>
-    
     <nav class="navbar">
         <div class="nav-content">
             <a href="index.html">Home</a>
@@ -26,16 +25,13 @@
 
         <div id="uploadPanel" style="display: none;">
             <h2 style="margin-bottom: 20px;">Upload Snippet Baru</h2>
-            <div class="form-group">
-                <input type="text" id="title" placeholder="Judul (Contoh: Dolphin AI Scraper)">
-                <input type="text" id="tags" placeholder="Tags (Contoh: js, nodejs, web)">
-                <textarea id="code" placeholder="Tempel kode di sini..." rows="12" style="font-family: monospace;"></textarea>
-                <button onclick="handleUpload()" class="btn-primary">Publish ke Database</button>
-                <button onclick="logout()" style="background:none; border:none; color:#ff4d4d; margin-top:15px; cursor:pointer; width:100%; font-size: 13px;">Logout Admin</button>
-            </div>
+            <input type="text" id="title" placeholder="Judul (Contoh: Scraper Bot)">
+            <input type="text" id="tags" placeholder="Tags (Contoh: js, api)">
+            <textarea id="code" placeholder="Tempel kode di sini..." rows="12" style="font-family: monospace;"></textarea>
+            <button onclick="handleUpload()" class="btn-primary">Publish ke Database</button>
+            <button onclick="logout()" style="background:none; border:none; color:#ff4d4d; margin-top:15px; cursor:pointer; width:100%;">Logout</button>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
