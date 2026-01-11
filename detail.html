@@ -6,7 +6,7 @@
     <title>Dolphin Vault - Code Detail</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Ubuntu+Mono&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -20,16 +20,15 @@
             --primary: #00f3ff;
             --secondary: #9d00ff;
             --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.08);
             --text-main: #f0f0f0;
             --text-dim: #888895;
             --font-main: 'Inter', sans-serif;
-            --font-code: 'Geist Mono', monospace;
+            --font-code: 'Ubuntu Mono', monospace;
+            --sidebar-w: 260px;
         }
 
-        * {
-            margin: 0; padding: 0; box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             background-color: var(--bg);
@@ -39,108 +38,116 @@
             overflow-x: hidden;
         }
 
-        /* --- Cyber Grid Background --- */
+        /* --- Background --- */
         .cyber-bg {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1;
             background: 
-                radial-gradient(circle at 10% 20%, rgba(157, 0, 255, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(0, 243, 255, 0.1) 0%, transparent 40%);
+                radial-gradient(circle at 5% 5%, rgba(157, 0, 255, 0.05) 0%, transparent 30%),
+                radial-gradient(circle at 95% 95%, rgba(0, 243, 255, 0.05) 0%, transparent 30%);
         }
 
-        .cyber-bg::after {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 200%; height: 200%;
-            background-image: 
-                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: gridMove 30s linear infinite;
-        }
-
-        @keyframes gridMove {
-            from { transform: translate(0, 0); }
-            to { transform: translate(-50px, -50px); }
-        }
-
-        /* --- Navbar --- */
-        .navbar {
+        /* --- Top Header & Burger --- */
+        .top-header {
             position: fixed;
-            top: 20px; left: 50%;
-            transform: translateX(-50%);
-            width: 90%; max-width: 500px;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 100px;
-            padding: 10px 20px;
-            z-index: 1000;
+            top: 0; left: 0; width: 100%;
+            height: 60px;
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 100;
         }
 
-        .nav-content { display: flex; justify-content: space-around; }
-        .navbar a {
-            color: var(--text-dim); text-decoration: none; font-size: 14px;
-            font-weight: 600; padding: 8px 20px; border-radius: 50px; transition: 0.3s;
+        .menu-trigger {
+            background: none; border: none; color: var(--text-main);
+            cursor: pointer; display: flex; align-items: center; gap: 15px;
         }
-        .navbar a:hover { color: var(--text-main); background: rgba(255,255,255,0.05); }
+
+        .brand-name {
+            font-weight: 800; letter-spacing: -1px; font-size: 1.2rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            position: fixed;
+            top: 0; left: calc(var(--sidebar-w) * -1);
+            width: var(--sidebar-w); height: 100%;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            z-index: 1001;
+            transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+            padding: 80px 20px 20px;
+        }
+
+        .sidebar.active { transform: translateX(var(--sidebar-w)); }
+
+        .sidebar-nav { display: flex; flex-direction: column; gap: 10px; }
+        .sidebar-nav a {
+            color: var(--text-dim); text-decoration: none; padding: 12px 15px;
+            border-radius: 10px; display: flex; align-items: center; gap: 12px;
+            font-weight: 500; transition: 0.2s;
+        }
+        .sidebar-nav a:hover { color: var(--primary); background: rgba(0, 243, 255, 0.05); }
+
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); opacity: 0; pointer-events: none;
+            z-index: 1000; transition: 0.3s;
+        }
+        .overlay.active { opacity: 1; pointer-events: auto; }
 
         /* --- Content Layout --- */
         .container {
             max-width: 900px;
-            margin: 120px auto 50px;
-            padding: 0 20px;
+            margin: 100px auto 50px;
+            padding: 0 24px;
         }
 
         .detail-header {
             margin-bottom: 30px;
-            animation: fadeIn 0.6s ease-out;
+            border-left: 3px solid var(--primary);
+            padding-left: 20px;
         }
 
         .detail-header h1 {
-            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            font-size: clamp(1.2rem, 4vw, 2rem);
             font-weight: 800;
-            letter-spacing: -0.05em;
-            color: var(--primary);
+            color: var(--text-main);
             font-family: var(--font-code);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .meta-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            color: var(--text-dim);
-            font-size: 14px;
+            display: flex; gap: 15px;
+            color: var(--text-dim); font-size: 13px;
         }
 
-        /* --- Code Container --- */
+        /* --- Code Window --- */
         .code-window {
             background: rgba(13, 13, 17, 0.8);
             border: 1px solid var(--glass-border);
-            border-radius: 20px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(10px);
-            animation: panelFade 0.8s ease-out;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
         .code-toolbar {
             background: rgba(255, 255, 255, 0.03);
             padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid var(--glass-border);
         }
 
-        .window-dots {
-            display: flex;
-            gap: 8px;
-        }
-
-        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .window-dots { display: flex; gap: 6px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
         .red { background: #ff5f56; }
         .yellow { background: #ffbd2e; }
         .green { background: #27c93f; }
@@ -149,63 +156,74 @@
             background: rgba(0, 243, 255, 0.1);
             color: var(--primary);
             border: 1px solid rgba(0, 243, 255, 0.2);
-            padding: 6px 12px;
+            padding: 6px 14px;
             border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 700;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: 0.3s;
+            display: flex; align-items: center; gap: 8px;
+            transition: 0.2s;
         }
 
         .btn-action:hover {
-            background: var(--primary);
-            color: var(--bg);
+            background: var(--primary); color: var(--bg);
             box-shadow: 0 0 15px var(--primary);
         }
 
-        /* --- Prism Overrides --- */
+        /* Prism & Font Ubuntu Mono Override */
+        pre[class*="language-"], code[class*="language-"] {
+            font-family: var(--font-code) !important;
+            font-size: 14px !important;
+            line-height: 1.6 !important;
+        }
+        
         pre[class*="language-"] {
             margin: 0 !important;
             padding: 25px !important;
             background: transparent !important;
-            font-family: var(--font-code) !important;
-            font-size: 15px !important;
         }
 
-        @keyframes panelFade {
-            from { opacity: 0; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @media (max-width: 600px) {
+            .container { margin-top: 80px; }
         }
     </style>
 </head>
 <body>
     <div class="cyber-bg"></div>
     
-    <nav class="navbar">
-        <div class="nav-content">
-            <a href="index.html">Home</a>
-            <a href="upload.html">Upload</a>
-        </div>
-    </nav>
+    <header class="top-header">
+        <button class="menu-trigger" onclick="toggleSidebar()">
+            <i data-lucide="menu"></i>
+            <span class="brand-name">DOLPHIN VAULT</span>
+        </button>
+    </header>
+
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <a href="index.html"><i data-lucide="home"></i> Dashboard</a>
+            <a href="upload.html"><i data-lucide="plus-circle"></i> Upload Snippet</a>
+            <a href="#"><i data-lucide="settings"></i> Settings</a>
+        </nav>
+    </aside>
 
     <div class="container">
         <div id="detail-content">
             <div style="text-align: center; padding: 100px;">
-                <p style="color: var(--primary); letter-spacing: 2px;">DECRYPTING DATA...</p>
+                <p style="color: var(--primary); letter-spacing: 2px;">DECRYPTING...</p>
             </div>
         </div>
     </div>
 
     <script src="script.js"></script>
     <script>
+        lucide.createIcons();
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
         async function loadDetail() {
             const urlParams = new URLSearchParams(window.location.search);
             const id = urlParams.get('id');
@@ -223,10 +241,9 @@
                 .single();
 
             if (data) {
-                const fileName = `code/${data.title.toLowerCase().replace(/\s+/g, '-')}.js`;
                 contentDiv.innerHTML = `
                     <div class="detail-header">
-                        <h1>${fileName}</h1>
+                        <h1>code/${data.title.toLowerCase().replace(/\s+/g, '-')}.js</h1>
                         <div class="meta-info">
                             <span><i data-lucide="tag" style="width:14px; vertical-align:middle"></i> ${data.tags || 'General'}</span>
                             <span><i data-lucide="calendar" style="width:14px; vertical-align:middle"></i> ${new Date(data.created_at).toLocaleDateString()}</span>
@@ -241,7 +258,7 @@
                                 <div class="dot green"></div>
                             </div>
                             <button onclick="copyCode()" class="btn-action">
-                                <i data-lucide="copy" style="width:14px"></i> COPY CODE
+                                <i data-lucide="copy" style="width:14px"></i> COPY
                             </button>
                         </div>
                         <pre class="language-javascript"><code id="codeRaw">${escapeHtml(data.code)}</code></pre>
@@ -263,11 +280,10 @@
         function copyCode() {
             const code = document.getElementById('codeRaw').innerText;
             navigator.clipboard.writeText(code).then(() => {
-                alert("ACCESS GRANTED: Code Copied to Clipboard");
+                alert("ACCESS GRANTED: Copied to clipboard");
             });
         }
 
-        // Jalankan load
         window.onload = loadDetail;
     </script>
 </body>
