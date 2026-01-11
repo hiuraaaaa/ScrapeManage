@@ -3,12 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Snippet - Admin</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Dolphin Vault - Secure Upload</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --bg: #050505;
+            --primary: #00f3ff;
+            --secondary: #9d00ff;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f0f0f0;
+            --text-dim: #888895;
+            --font-main: 'Inter', sans-serif;
+            --font-code: 'Geist Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- Cyber Grid Background --- */
+        .cyber-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(157, 0, 255, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 243, 255, 0.1) 0%, transparent 40%);
+        }
+
+        .cyber-bg::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 200%; height: 200%;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 30s linear infinite;
+        }
+
+        @keyframes gridMove {
+            from { transform: translate(0, 0); }
+            to { transform: translate(-50px, -50px); }
+        }
+
+        /* --- Navbar --- */
+        .navbar {
+            position: fixed;
+            top: 20px; left: 50%;
+            transform: translateX(-50%);
+            width: 90%; max-width: 500px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 100px;
+            padding: 10px 20px;
+            z-index: 1000;
+        }
+
+        .nav-content { display: flex; justify-content: space-around; }
+        .navbar a {
+            color: var(--text-dim); text-decoration: none; font-size: 14px;
+            font-weight: 600; padding: 8px 20px; border-radius: 50px; transition: 0.3s;
+        }
+        .navbar a.active { color: var(--primary); background: rgba(0, 243, 255, 0.1); }
+
+        /* --- Forms Layout --- */
+        .container {
+            max-width: 600px;
+            margin: 120px auto 50px;
+            padding: 0 20px;
+        }
+
+        .glass-panel {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            animation: panelFade 0.6s ease-out;
+        }
+
+        @keyframes panelFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            margin-bottom: 25px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        /* --- Inputs Styling --- */
+        input, textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 15px;
+            color: white;
+            font-family: var(--font-main);
+            margin-bottom: 20px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        textarea { font-family: var(--font-code); font-size: 14px; resize: vertical; }
+
+        input:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+        }
+
+        /* --- Primary Button --- */
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: #000;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.4);
+        }
+
+        .logout-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #ff4d4d;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0.7;
+            transition: 0.3s;
+        }
+
+        .logout-link:hover { opacity: 1; }
+
+        /* Mobile Adjustments */
+        @media (max-width: 480px) {
+            .glass-panel { padding: 25px; }
+            h2 { font-size: 1.5rem; }
+        }
+    </style>
 </head>
 <body>
-    <div class="grid-bg"></div>
+    <div class="cyber-bg"></div>
+    
     <nav class="navbar">
         <div class="nav-content">
             <a href="index.html">Home</a>
@@ -17,21 +192,36 @@
     </nav>
 
     <div class="container">
-        <div id="loginForm" style="max-width: 400px; margin: 80px auto; text-align: center;">
-            <h2 style="margin-bottom: 20px;">Admin Access</h2>
-            <input type="password" id="adminPass" placeholder="Masukkan Password Admin">
-            <button onclick="checkAuth()" class="btn-primary">Login</button>
+        <div id="loginForm" class="glass-panel" style="max-width: 450px; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <i data-lucide="shield-check" style="width: 48px; height: 48px; color: var(--primary);"></i>
+            </div>
+            <h2>Admin Access</h2>
+            <input type="password" id="adminPass" placeholder="Enter Secure Password">
+            <button onclick="checkAuth()" class="btn-primary">Verify Identity</button>
         </div>
 
-        <div id="uploadPanel" style="display: none;">
-            <h2 style="margin-bottom: 20px;">Upload Snippet Baru</h2>
-            <input type="text" id="title" placeholder="Judul (Contoh: Scraper Bot)">
-            <input type="text" id="tags" placeholder="Tags (Contoh: js, api)">
-            <textarea id="code" placeholder="Tempel kode di sini..." rows="12" style="font-family: monospace;"></textarea>
-            <button onclick="handleUpload()" class="btn-primary">Publish ke Database</button>
-            <button onclick="logout()" style="background:none; border:none; color:#ff4d4d; margin-top:15px; cursor:pointer; width:100%;">Logout</button>
+        <div id="uploadPanel" class="glass-panel" style="display: none;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <i data-lucide="terminal" style="width: 48px; height: 48px; color: var(--secondary);"></i>
+            </div>
+            <h2>New Snippet</h2>
+            <input type="text" id="title" placeholder="Snippet Title (e.g. Discord Bot)">
+            <input type="text" id="tags" placeholder="Tags (e.g. python, nodejs, api)">
+            <textarea id="code" placeholder="// Paste your cyber code here..." rows="12"></textarea>
+            
+            <button onclick="handleUpload()" class="btn-primary">Publish to Vault</button>
+            
+            <a href="#" onclick="logout()" class="logout-link">
+                <i data-lucide="log-out" style="width: 14px; height: 14px; vertical-align: middle;"></i> 
+                Terminate Session
+            </a>
         </div>
     </div>
+
     <script src="script.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>
