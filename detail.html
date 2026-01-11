@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Detail - Dolphin Vault</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="index.html">Home</a>
+            <a href="upload.html">Upload</a>
+        </div>
+    </nav>
+
+    <div class="container" style="max-width: 800px;">
+        <div id="detail-content">
+            <p style="color: #444; text-align: center; margin-top: 50px;">Memuat detail kode...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Logika khusus halaman detail
+        async function loadDetail() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            const contentDiv = document.getElementById('detail-content');
+
+            if (!id) {
+                contentDiv.innerHTML = "<p>ID tidak ditemukan.</p>";
+                return;
+            }
+
+            const { data, error } = await _supabase
+                .from('snippets')
+                .select('*')
+                .eq('id', id)
+                .single();
+
+            if (data) {
+                contentDiv.innerHTML = `
+                    <div style="margin-bottom: 20px;">
+                        <h1 style="font-size: 28px; margin-bottom: 5px;">code/${data.title.toLowerCase().replace(/\s+/g, '-')}.js</h1>
+                        <p style="color: var(--text-dim); font-size: 14px;">
+                            <i data-lucide="clock" style="width:14px; vertical-align:middle;"></i> 
+                            Created ${new Date(data.created_at).toLocaleDateString()}
+                        </p>
+                    </div>
+                    
+                    <div class="code-container" style="position: relative; background: #111; border: 1px solid #222; border-radius: 12px; overflow: hidden;">
+                        <div style="display: flex; gap: 10px; padding: 10px 15px; background: #1a1a1a; border-bottom: 1px solid #222;">
+                            <button onclick="copyCode()" class="tag" style="cursor:pointer; border-radius:4px;"><i data-lucide="copy" style="width:14px;"></i></button>
+                            <button class="tag" style="border-radius:4px;"><i data-lucide="download" style="width:14px;"></i></button>
+                        </div>
+                        <pre style="margin:0; padding: 20px; font-size: 14px;"><code class="language-javascript" id="codeRaw">${data.code}</code></pre>
+                    </div>
+                `;
+                lucide.createIcons();
+                Prism.highlightAll(); // Mengaktifkan warna pada kode
+            } else {
+                contentDiv.innerHTML = "<p>Snippet tidak ditemukan.</p>";
+            }
+        }
+
+        function copyCode() {
+            const code = document.getElementById('codeRaw').innerText;
+            navigator.clipboard.writeText(code);
+            alert("Kode disalin!");
+        }
+
+        if (window.location.pathname.includes('detail.html')) {
+            loadDetail();
+        }
+    </script>
+</body>
+</html>
