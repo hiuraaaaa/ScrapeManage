@@ -3,743 +3,286 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dolphin Vault - Home</title>
-    <!-- Menambahkan font Inter dan Geist Mono -->
+    <title>Dolphin Vault - Cyber Library</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Geist+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
-        /* Reset & Base Styles */
+        :root {
+            --bg: #050505;
+            --primary: #00f3ff;
+            --secondary: #9d00ff;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f0f0f0;
+            --text-dim: #888895;
+            --font-main: 'Inter', sans-serif;
+            --font-code: 'Geist Mono', monospace;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        :root {
-            --primary: #00f3ff;
-            --primary-dark: #00a8b5;
-            --secondary: #9d00ff;
-            --accent: #ff00c8;
-            --bg-primary: #050505;
-            --bg-secondary: #0a0a0a;
-            --bg-glass: rgba(10, 10, 15, 0.7);
-            --text-primary: #f0f0f0;
-            --text-dim: #a0a0b0;
-            --text-code: #e3e3e3;
-            --border-color: rgba(255, 255, 255, 0.08);
-            --border-glow: rgba(0, 243, 255, 0.3);
-            --shadow-color: rgba(0, 0, 0, 0.5);
-            --card-bg: rgba(20, 20, 30, 0.4);
-            --success: #00ff9d;
-            --warning: #ff9d00;
-            --danger: #ff006a;
-            --transition-smooth: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            line-height: 1.6;
             overflow-x: hidden;
-            position: relative;
+            min-height: 100vh;
         }
 
-        /* Animated Grid Background */
-        .grid-bg {
+        /* --- Animated Cyber Background --- */
+        .cyber-bg {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -2;
+            z-index: -1;
             background: 
-                radial-gradient(circle at 20% 30%, rgba(9, 0, 59, 0.15) 0%, transparent 30%),
-                radial-gradient(circle at 80% 70%, rgba(59, 0, 59, 0.15) 0%, transparent 30%),
-                linear-gradient(var(--bg-primary), var(--bg-primary));
+                radial-gradient(circle at 10% 20%, rgba(157, 0, 255, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 243, 255, 0.1) 0%, transparent 40%);
         }
 
-        .grid-bg::before {
-            content: '';
+        .cyber-bg::after {
+            content: "";
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 200%; height: 200%;
             background-image: 
-                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
             background-size: 50px 50px;
-            animation: gridMove 20s linear infinite;
+            animation: gridMove 30s linear infinite;
         }
 
         @keyframes gridMove {
-            0% {
-                transform: translate(0, 0);
-            }
-            100% {
-                transform: translate(50px, 50px);
-            }
+            from { transform: translate(0, 0); }
+            to { transform: translate(-50px, -50px); }
         }
 
-        /* Floating Navbar */
+        /* --- Floating Navbar --- */
         .navbar {
             position: fixed;
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            width: calc(100% - 40px);
-            max-width: 800px;
-            background: var(--bg-glass);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 16px 24px;
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            width: 90%;
+            max-width: 500px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 100px;
+            padding: 10px 20px;
             z-index: 1000;
-            box-shadow: 
-                0 10px 30px rgba(0, 0, 0, 0.5),
-                0 0 0 1px rgba(0, 243, 255, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            transition: all 0.4s ease;
-        }
-
-        .navbar.scrolled {
-            top: 10px;
-            padding: 12px 24px;
-            box-shadow: 
-                0 15px 40px rgba(0, 0, 0, 0.6),
-                0 0 0 1px rgba(0, 243, 255, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .nav-content {
             display: flex;
-            justify-content: center;
-            gap: 32px;
+            justify-content: space-around;
+            align-items: center;
         }
 
         .navbar a {
             color: var(--text-dim);
             text-decoration: none;
+            font-size: 14px;
             font-weight: 600;
-            font-size: 16px;
-            letter-spacing: -0.3px;
-            padding: 8px 16px;
-            border-radius: 12px;
-            transition: all 0.3s var(--transition-smooth);
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .navbar a::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border-radius: 12px;
-            background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(157, 0, 255, 0.1));
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: -1;
-        }
-
-        .navbar a:hover {
-            color: var(--primary);
-            transform: translateY(-2px);
-        }
-
-        .navbar a:hover::before {
-            opacity: 1;
+            padding: 8px 20px;
+            border-radius: 50px;
+            transition: 0.3s;
         }
 
         .navbar a.active {
             color: var(--primary);
             background: rgba(0, 243, 255, 0.1);
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
         }
 
-        /* Main Container */
+        .navbar a:hover:not(.active) {
+            color: var(--text-main);
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* --- Main Layout --- */
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 120px 20px 60px;
-            width: 100%;
+            max-width: 1100px;
+            margin: 120px auto 50px;
+            padding: 0 20px;
         }
 
-        /* Header */
         header {
-            margin-bottom: 60px;
             text-align: center;
+            margin-bottom: 60px;
         }
 
         header h1 {
-            font-size: 48px;
+            font-size: clamp(2.5rem, 8vw, 4rem);
             font-weight: 800;
-            letter-spacing: -2px;
-            margin-bottom: 16px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            letter-spacing: -0.05em;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
             -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            position: relative;
-            display: inline-block;
-        }
-
-        header h1::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 120px;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), transparent);
-            border-radius: 2px;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
         }
 
         header p {
             color: var(--text-dim);
-            font-size: 18px;
-            font-weight: 400;
-            max-width: 600px;
-            margin: 0 auto;
-            line-height: 1.6;
+            font-size: 1.1rem;
         }
 
-        /* Snippet List Container */
+        /* --- Snippet List (Grid) --- */
         #snippet-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 24px;
-            margin-top: 20px;
+            gap: 25px;
         }
 
-        /* Snippet Cards */
+        /* --- Glass Card Style --- */
         .snippet-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 24px;
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            transition: all 0.4s var(--transition-smooth);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 
-                0 10px 30px var(--shadow-color),
-                0 0 0 1px rgba(255, 255, 255, 0.03);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex;
             flex-direction: column;
-            height: 100%;
-        }
-
-        .snippet-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            gap: 15px;
+            position: relative;
+            overflow: hidden;
         }
 
         .snippet-card:hover {
             transform: translateY(-10px) scale(1.02);
-            border-color: var(--border-glow);
-            box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.7),
-                0 0 30px rgba(0, 243, 255, 0.15),
-                0 0 0 1px rgba(0, 243, 255, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0, 243, 255, 0.1);
         }
 
-        .snippet-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 20px;
-        }
-
-        .snippet-title {
-            font-size: 20px;
+        .snippet-card h3 {
+            font-size: 1.4rem;
             font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-            letter-spacing: -0.5px;
+            letter-spacing: -0.03em;
         }
 
-        .snippet-language {
-            display: inline-block;
-            padding: 6px 12px;
-            background: rgba(0, 243, 255, 0.1);
-            color: var(--primary);
-            font-size: 12px;
-            font-weight: 600;
-            border-radius: 20px;
-            letter-spacing: 0.5px;
-            font-family: 'Geist Mono', monospace;
+        .tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
-        .snippet-description {
-            color: var(--text-dim);
-            font-size: 15px;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            flex-grow: 1;
+        .tag {
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            padding: 4px 10px;
+            background: rgba(157, 0, 255, 0.15);
+            color: var(--secondary);
+            border-radius: 6px;
+            border: 1px solid rgba(157, 0, 255, 0.3);
         }
 
-        .snippet-code-container {
-            background: rgba(10, 10, 15, 0.8);
+        /* --- Code Block Dracula Style --- */
+        pre {
+            background: #282a36;
+            padding: 15px;
             border-radius: 12px;
-            padding: 18px;
-            margin-bottom: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
             overflow-x: auto;
-            position: relative;
-        }
-
-        .snippet-code-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 32px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px 12px 0 0;
-        }
-
-        .snippet-code {
-            font-family: 'Geist Mono', monospace;
-            font-size: 14px;
-            color: var(--text-code);
-            line-height: 1.5;
-            white-space: pre-wrap;
-            word-break: break-word;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* VS Code-like Syntax Highlighting */
-        .snippet-code .keyword {
-            color: #ff79c6;
-            font-weight: 500;
-        }
-
-        .snippet-code .function {
-            color: #50fa7b;
-        }
-
-        .snippet-code .string {
-            color: #f1fa8c;
-        }
-
-        .snippet-code .comment {
-            color: #6272a4;
-            font-style: italic;
-        }
-
-        .snippet-code .number {
-            color: #bd93f9;
-        }
-
-        .snippet-code .operator {
-            color: #ff79c6;
-        }
-
-        .snippet-code .variable {
-            color: #8be9fd;
-        }
-
-        .snippet-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            border: 1px solid rgba(0,0,0,0.3);
+            font-family: var(--font-code);
             font-size: 13px;
-            color: var(--text-dim);
-            padding-top: 18px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
         }
 
-        .snippet-date {
-            font-family: 'Geist Mono', monospace;
+        code {
+            color: #f8f8f2;
         }
 
-        .snippet-actions {
-            display: flex;
-            gap: 12px;
+        /* --- Skeleton Loading --- */
+        .skeleton {
+            height: 200px;
+            background: linear-gradient(90deg, #111 25%, #222 50%, #111 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 24px;
         }
 
-        .snippet-actions button {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-dim);
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* --- Buttons --- */
+        .btn-copy {
+            align-self: flex-start;
+            background: var(--primary);
+            color: var(--bg);
+            border: none;
             padding: 8px 16px;
             border-radius: 10px;
-            font-size: 13px;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 12px;
             cursor: pointer;
-            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             gap: 6px;
+            transition: 0.3s;
         }
 
-        .snippet-actions button:hover {
-            background: rgba(0, 243, 255, 0.1);
-            color: var(--primary);
-            border-color: var(--primary);
+        .btn-copy:hover {
+            box-shadow: 0 0 15px var(--primary);
             transform: translateY(-2px);
         }
 
-        /* Loading State */
-        #snippet-list:empty,
-        #snippet-list p {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-dim);
-            font-size: 18px;
-            background: var(--card-bg);
-            border-radius: 20px;
-            border: 1px dashed var(--border-color);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-
-        /* Empty State */
-        .empty-state {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 80px 20px;
-        }
-
-        .empty-state-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            color: var(--text-dim);
-            opacity: 0.5;
-        }
-
-        .empty-state h3 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: var(--text-primary);
-        }
-
-        .empty-state p {
-            color: var(--text-dim);
-            max-width: 400px;
-            margin: 0 auto 30px;
-            line-height: 1.6;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .navbar {
-                top: 10px;
-                width: calc(100% - 20px);
-                padding: 12px 16px;
-            }
-
-            .nav-content {
-                gap: 16px;
-            }
-
-            .navbar a {
-                padding: 8px 12px;
-                font-size: 15px;
-            }
-
-            .container {
-                padding: 100px 16px 40px;
-            }
-
-            header h1 {
-                font-size: 36px;
-                letter-spacing: -1.5px;
-            }
-
-            header p {
-                font-size: 16px;
-            }
-
-            #snippet-list {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .snippet-card {
-                padding: 20px;
-            }
-        }
-
-        @media (min-width: 769px) and (max-width: 1024px) {
-            #snippet-list {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (min-width: 1025px) {
-            #snippet-list {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        /* Scrollbar Styling */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(10, 10, 15, 0.5);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(0, 243, 255, 0.3);
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 243, 255, 0.5);
+        /* --- Responsive HP --- */
+        @media (max-width: 480px) {
+            .container { margin-top: 100px; }
+            header h1 { font-size: 2rem; }
+            #snippet-list { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="grid-bg"></div>
-    <nav class="navbar" id="navbar">
+    <div class="cyber-bg"></div>
+    
+    <nav class="navbar">
         <div class="nav-content">
-            <a href="index.html" class="active">
-                <i data-lucide="home"></i>
-                Home
-            </a>
-            <a href="upload.html">
-                <i data-lucide="upload"></i>
-                Upload
-            </a>
+            <a href="index.html" class="active">Home</a>
+            <a href="upload.html">Upload</a>
         </div>
     </nav>
 
     <div class="container">
         <header>
-            <h1>Code Library</h1>
-            <p>Daftar snippet kode yang telah diunggah. Temukan dan gunakan kembali kode terbaik Anda.</p>
+            <h1>Dolphin Vault</h1>
+            <p>Next-gen code repository for cyber developers.</p>
         </header>
 
         <div id="snippet-list">
-            <p>Memuat data dari database...</p>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
         </div>
     </div>
 
+    <script src="script.js"></script>
     <script>
-        // Inisialisasi Lucide Icons
         lucide.createIcons();
         
-        // Navbar scroll effect
-        window.addEventListener('scroll', function() {
-            const navbar = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
-        
-        // Supabase initialization (gunakan ID proyek Anda)
-        const supabaseUrl = 'https://your-project.supabase.co';
-        const supabaseKey = 'your-anon-key';
-        
-        // Inisialisasi Supabase client
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-        
-        // Contoh data untuk preview (akan diganti dengan data dari Supabase)
-        const sampleSnippets = [
-            {
-                id: 1,
-                title: "Authentication Helper",
-                description: "Fungsi helper untuk validasi token JWT dengan error handling yang komprehensif.",
-                language: "JavaScript",
-                code: "function validateToken(token) {\n  // Validasi struktur token\n  if (!token || typeof token !== 'string') {\n    throw new Error('Invalid token format');\n  }\n  \n  // Decode token\n  const parts = token.split('.');\n  if (parts.length !== 3) {\n    throw new Error('Invalid JWT structure');\n  }\n  \n  // Verifikasi signature (contoh sederhana)\n  const payload = JSON.parse(atob(parts[1]));\n  const now = Math.floor(Date.now() / 1000);\n  \n  if (payload.exp && payload.exp < now) {\n    throw new Error('Token has expired');\n  }\n  \n  return payload;\n}",
-                created_at: "2023-10-15"
-            },
-            {
-                id: 2,
-                title: "Database Connection",
-                description: "Konfigurasi koneksi database dengan connection pooling dan retry logic.",
-                language: "Python",
-                code: "import psycopg2\nfrom psycopg2 import pool\nfrom datetime import datetime\nimport time\n\nclass DatabaseConnection:\n    def __init__(self, min_conn=1, max_conn=10):\n        self.connection_pool = None\n        self.min_conn = min_conn\n        self.max_conn = max_conn\n        \n    def create_pool(self, dbname, user, password, host):\n        try:\n            self.connection_pool = psycopg2.pool.SimpleConnectionPool(\n                self.min_conn,\n                self.max_conn,\n                dbname=dbname,\n                user=user,\n                password=password,\n                host=host\n            )\n            print(f\"[{datetime.now()}] Connection pool created successfully\")\n        except Exception as e:\n            print(f\"Error creating connection pool: {e}\")\n            raise\n\n    def get_connection(self):\n        if self.connection_pool:\n            return self.connection_pool.getconn()\n        raise Exception(\"Connection pool not initialized\")\n\n    def release_connection(self, connection):\n        if self.connection_pool:\n            self.connection_pool.putconn(connection)",
-                created_at: "2023-10-10"
-            },
-            {
-                id: 3,
-                title: "Response Formatter",
-                description: "Utility untuk format response API yang konsisten dengan status code dan metadata.",
-                language: "TypeScript",
-                code: "interface ApiResponse<T> {\n  success: boolean;\n  data?: T;\n  error?: {\n    code: string;\n    message: string;\n    details?: any;\n  };\n  metadata?: {\n    timestamp: string;\n    version: string;\n    pagination?: {\n      page: number;\n      limit: number;\n      total: number;\n      totalPages: number;\n    };\n  };\n}\n\nexport class ResponseFormatter {\n  static success<T>(data: T, metadata?: any): ApiResponse<T> {\n    return {\n      success: true,\n      data,\n      metadata: {\n        timestamp: new Date().toISOString(),\n        version: '1.0',\n        ...metadata\n      }\n    };\n  }\n\n  static error(code: string, message: string, details?: any): ApiResponse<null> {\n    return {\n      success: false,\n      error: { code, message, details },\n      metadata: {\n        timestamp: new Date().toISOString(),\n        version: '1.0'\n      }\n    };\n  }\n}",
-                created_at: "2023-10-05"
-            }
-        ];
-        
-        // Fungsi untuk menampilkan snippet
-        function displaySnippets(snippets) {
-            const snippetList = document.getElementById('snippet-list');
-            
-            if (!snippets || snippets.length === 0) {
-                snippetList.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">
-                            <i data-lucide="code-2"></i>
-                        </div>
-                        <h3>Tidak Ada Snippet</h3>
-                        <p>Belum ada snippet kode yang diunggah. Mulailah dengan mengunggah kode pertama Anda.</p>
-                        <a href="upload.html" style="display: inline-block; padding: 12px 24px; background: linear-gradient(90deg, var(--primary), var(--secondary)); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; transition: transform 0.3s var(--transition-smooth);">Upload Snippet Pertama</a>
-                    </div>
-                `;
-                lucide.createIcons();
-                return;
-            }
-            
-            snippetList.innerHTML = snippets.map(snippet => `
-                <div class="snippet-card">
-                    <div class="snippet-card-header">
-                        <div>
-                            <h3 class="snippet-title">${snippet.title}</h3>
-                            <span class="snippet-language">${snippet.language}</span>
-                        </div>
-                    </div>
-                    <p class="snippet-description">${snippet.description}</p>
-                    <div class="snippet-code-container">
-                        <pre class="snippet-code">${escapeHtml(snippet.code)}</pre>
-                    </div>
-                    <div class="snippet-meta">
-                        <span class="snippet-date">${formatDate(snippet.created_at)}</span>
-                        <div class="snippet-actions">
-                            <button class="copy-btn" data-code="${escapeHtml(snippet.code)}">
-                                <i data-lucide="copy"></i>
-                                Copy
-                            </button>
-                            <button class="view-btn">
-                                <i data-lucide="external-link"></i>
-                                View
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-            
-            // Tambahkan event listeners untuk tombol copy
-            document.querySelectorAll('.copy-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const code = this.getAttribute('data-code');
-                    navigator.clipboard.writeText(code).then(() => {
-                        // Feedback visual
-                        const originalText = this.innerHTML;
-                        this.innerHTML = '<i data-lucide="check"></i> Copied!';
-                        this.style.background = 'rgba(0, 255, 157, 0.1)';
-                        this.style.color = 'var(--success)';
-                        this.style.borderColor = 'var(--success)';
-                        
-                        setTimeout(() => {
-                            this.innerHTML = originalText;
-                            this.style.background = '';
-                            this.style.color = '';
-                            this.style.borderColor = '';
-                            lucide.createIcons();
-                        }, 2000);
-                    });
-                });
+        // Sedikit script tambahan untuk efek smooth scroll/hover
+        document.querySelectorAll('.navbar a').forEach(anchor => {
+            anchor.addEventListener('click', () => {
+                document.querySelectorAll('.navbar a').forEach(nav => nav.classList.remove('active'));
+                anchor.classList.add('active');
             });
-            
-            // Highlight syntax sederhana
-            applySyntaxHighlighting();
-            
-            // Inisialisasi ulang ikon Lucide
-            lucide.createIcons();
-        }
-        
-        // Fungsi untuk escape HTML
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-        
-        // Fungsi untuk format tanggal
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('id-ID', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-        }
-        
-        // Fungsi untuk syntax highlighting sederhana
-        function applySyntaxHighlighting() {
-            document.querySelectorAll('.snippet-code').forEach(codeBlock => {
-                let code = codeBlock.textContent;
-                
-                // Highlight untuk JavaScript/TypeScript
-                code = code.replace(/\b(function|const|let|var|if|else|for|while|return|class|export|import|from|default)\b/g, '<span class="keyword">$1</span>');
-                code = code.replace(/\b(console|log|error|warn|info)\b/g, '<span class="function">$1</span>');
-                code = code.replace(/(".*?"|'.*?'|`.*?`)/g, '<span class="string">$1</span>');
-                code = code.replace(/\/\/.*/g, '<span class="comment">$&</span>');
-                code = code.replace(/\b(\d+)\b/g, '<span class="number">$1</span>');
-                code = code.replace(/[=+\-*/<>!&|^%~]+/g, '<span class="operator">$&</span>');
-                
-                // Highlight untuk Python
-                code = code.replace(/\b(def|class|import|from|as|if|elif|else|for|while|try|except|finally|with|return|yield|lambda)\b/g, '<span class="keyword">$1</span>');
-                code = code.replace(/\b(print|len|str|int|float|list|dict|tuple|set|range|enumerate)\b/g, '<span class="function">$1</span>');
-                
-                codeBlock.innerHTML = code;
-            });
-        }
-        
-        // Simulasi loading data
-        document.addEventListener('DOMContentLoaded', function() {
-            // Untuk demo, gunakan data contoh
-            // Dalam implementasi nyata, ambil data dari Supabase
-            setTimeout(() => {
-                displaySnippets(sampleSnippets);
-            }, 1000);
-            
-            // Kode untuk mengambil data dari Supabase:
-            /*
-            async function fetchSnippets() {
-                try {
-                    const { data, error } = await supabase
-                        .from('snippets')
-                        .select('*')
-                        .order('created_at', { ascending: false });
-                    
-                    if (error) throw error;
-                    
-                    displaySnippets(data);
-                } catch (error) {
-                    console.error('Error fetching snippets:', error);
-                    document.getElementById('snippet-list').innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-state-icon">
-                                <i data-lucide="alert-circle"></i>
-                            </div>
-                            <h3>Error Memuat Data</h3>
-                            <p>Terjadi kesalahan saat memuat data dari database. Silakan coba lagi nanti.</p>
-                        </div>
-                    `;
-                    lucide.createIcons();
-                }
-            }
-            
-            fetchSnippets();
-            */
         });
     </script>
 </body>
