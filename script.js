@@ -46,10 +46,10 @@ async function loadSnippets() {
         return;
     }
 
-    // Merender kartu dengan struktur Compact Professional
+    // Merender kartu dengan struktur Compact
     listDiv.innerHTML = data.map(item => {
-        // Ambil preview kode (80 karakter pertama)
-        const codePreview = item.code.length > 80 ? item.code.substring(0, 80) + '...' : item.code;
+        // PREVIEW CODE DIPERSEMPIT (Hanya 45 karakter agar sangat ringan)
+        const codePreview = item.code.length > 45 ? item.code.substring(0, 45) + '...' : item.code;
         
         return `
             <div class="snippet-card">
@@ -61,21 +61,17 @@ async function loadSnippets() {
                 
                 <div class="snippet-meta">
                     <span class="date">${new Date(item.created_at).toLocaleDateString()}</span>
-                    <div class="card-actions">
-                        <a href="detail.html?id=${item.id}" class="btn-icon">
-                            <i data-lucide="external-link" style="width:16px; height:16px;"></i>
-                        </a>
-                    </div>
+                    <a href="detail.html?id=${item.id}" class="btn-icon">
+                        <i data-lucide="arrow-right" style="width:16px; height:16px;"></i>
+                    </a>
                 </div>
             </div>
         `;
     }).join('');
     
-    // Refresh icon Lucide agar muncul
     lucide.createIcons();
 }
 
-// Fungsi bantu untuk mencegah error XSS pada preview kode
 function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
