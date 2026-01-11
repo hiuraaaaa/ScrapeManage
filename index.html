@@ -100,53 +100,54 @@
         }
         .hero-content p { color: var(--text-dim); font-size: 0.95rem; max-width: 450px; }
 
-/* --- Perbaikan Search Bar agar Sejajar ke Kiri --- */
-.search-container {
-    position: relative;
-    margin-bottom: 30px;
-    width: 100%; /* Mengisi seluruh lebar container */
-    max-width: 100%; /* Memastikan tidak terbatasi ke tengah */
-    display: flex;
-    align-items: center;
-    justify-content: flex-start; /* Memaksa konten ke kiri */
-}
+        /* --- FIX SEARCH BAR --- */
+        .search-container {
+            position: relative;
+            margin-bottom: 30px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+        }
 
-.search-container i {
-    position: absolute;
-    left: 16px; /* Posisi ikon di dalam bar */
-    color: var(--text-dim);
-    width: 18px;
-    height: 18px;
-    z-index: 10;
-    pointer-events: none;
-}
+        /* Selektor i dan svg untuk Lucide Icons */
+        .search-container i, 
+        .search-container svg {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%); /* Menengahkan ikon secara vertikal */
+            color: var(--text-dim);
+            width: 18px;
+            height: 18px;
+            z-index: 10;
+            pointer-events: none; /* Klik tembus ke input */
+            transition: 0.3s;
+        }
 
-#search-input {
-    width: 100%; /* Mengikuti lebar container */
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--glass-border);
-    border-radius: 12px;
-    padding: 14px 15px 14px 48px; /* Padding kiri 48px agar teks tidak menimpa ikon */
-    color: white;
-    font-family: var(--font-main);
-    font-size: 0.95rem;
-    outline: none;
-    transition: 0.3s;
-    margin-left: 0; /* Memastikan tidak ada margin tambahan di kiri */
-}
+        #search-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 14px 15px 14px 48px; /* Padding kiri luas agar tidak menabrak ikon */
+            color: white;
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            outline: none;
+            transition: 0.3s;
+        }
 
-#search-input:focus {
-    border-color: var(--primary);
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
-}
-
-/* Responsif untuk Mobile */
-@media (max-width: 600px) {
-    .search-container {
-        padding: 0; /* Menghilangkan padding container jika ada */
-    }
-}
+        #search-input:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
+        }
+        
+        /* Efek ikon saat input fokus */
+        #search-input:focus + svg,
+        #search-input:focus ~ i {
+            color: var(--primary);
+        }
 
         /* --- Sidebar & Overlay --- */
         .sidebar {
@@ -284,6 +285,7 @@
 
     <script src="script.js"></script>
     <script>
+        // Inisialisasi ikon Lucide
         lucide.createIcons();
 
         function toggleSidebar() {
@@ -296,7 +298,7 @@
             const cards = document.querySelectorAll('.snippet-card');
             cards.forEach(card => {
                 const title = card.querySelector('h3').innerText.toLowerCase();
-                const tags = card.querySelector('.tags') ? card.querySelector('.tags').innerText.toLowerCase() : "";
+                const tags = card.querySelector('.tag') ? card.querySelector('.tag').innerText.toLowerCase() : "";
                 if (title.includes(query) || tags.includes(query)) {
                     card.classList.remove('hidden');
                 } else {
