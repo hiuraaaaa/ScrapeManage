@@ -100,43 +100,52 @@
         }
         .hero-content p { color: var(--text-dim); font-size: 0.95rem; max-width: 450px; }
 
-/* --- Perbaikan Search Bar & Icon --- */
+/* --- Perbaikan Search Bar agar Sejajar ke Kiri --- */
 .search-container {
     position: relative;
     margin-bottom: 30px;
-    width: 100%;
+    width: 100%; /* Mengisi seluruh lebar container */
+    max-width: 100%; /* Memastikan tidak terbatasi ke tengah */
     display: flex;
     align-items: center;
+    justify-content: flex-start; /* Memaksa konten ke kiri */
 }
 
 .search-container i {
     position: absolute;
-    left: 18px; /* Geser sedikit ke kanan agar tidak terlalu nempel pinggir */
+    left: 16px; /* Posisi ikon di dalam bar */
     color: var(--text-dim);
     width: 18px;
     height: 18px;
-    pointer-events: none; /* Agar klik tembus ke input */
-    z-index: 5; /* Pastikan ikon di atas background input */
+    z-index: 10;
+    pointer-events: none;
 }
 
 #search-input {
-    width: 100%;
-    background: rgba(255, 255, 255, 0.05); /* Gunakan rgba agar lebih konsisten */
+    width: 100%; /* Mengikuti lebar container */
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--glass-border);
     border-radius: 12px;
-    padding: 14px 15px 14px 48px; /* Padding kiri ditambah (48px) agar teks tidak menabrak ikon */
+    padding: 14px 15px 14px 48px; /* Padding kiri 48px agar teks tidak menimpa ikon */
     color: white;
     font-family: var(--font-main);
     font-size: 0.95rem;
     outline: none;
     transition: 0.3s;
-    -webkit-appearance: none; /* Menghilangkan styling bawaan browser */
+    margin-left: 0; /* Memastikan tidak ada margin tambahan di kiri */
 }
 
 #search-input:focus {
     border-color: var(--primary);
     background: rgba(255, 255, 255, 0.08);
     box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
+}
+
+/* Responsif untuk Mobile */
+@media (max-width: 600px) {
+    .search-container {
+        padding: 0; /* Menghilangkan padding container jika ada */
+    }
 }
 
         /* --- Sidebar & Overlay --- */
