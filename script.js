@@ -46,17 +46,19 @@ async function loadSnippets() {
         return;
     }
 
-    // Merender kartu dengan struktur Compact
+    // Merender kartu dengan struktur: Title -> Tags -> Preview Code
     listDiv.innerHTML = data.map(item => {
-        // PREVIEW CODE DIPERSEMPIT (Hanya 45 karakter agar sangat ringan)
+        // Preview kode dipersempit (45 karakter) agar ringan
         const codePreview = item.code.length > 45 ? item.code.substring(0, 45) + '...' : item.code;
         
         return `
             <div class="snippet-card">
-                <div class="tags">
+                <h3 style="margin-bottom: 6px; font-size: 0.95rem;">${item.title}</h3>
+                
+                <div class="tags" style="margin-bottom: 12px;">
                     ${item.tags ? item.tags.split(',').map(t => `<span class="tag">${t.trim()}</span>`).join('') : '<span class="tag">CODE</span>'}
                 </div>
-                <h3>${item.title}</h3>
+
                 <pre><code>${escapeHtml(codePreview)}</code></pre>
                 
                 <div class="snippet-meta">
