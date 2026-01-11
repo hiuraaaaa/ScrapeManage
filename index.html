@@ -4,36 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dolphin Vault - Home</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- Menambahkan font Inter dan Geist Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Geist+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #3b82f6;
-            --primary-dark: #2563eb;
-            --secondary: #8b5cf6;
-            --dark: #1e293b;
-            --light: #f8fafc;
-            --gray: #64748b;
-            --gray-light: #e2e8f0;
-            --border-radius: 12px;
-            --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            --transition: all 0.3s ease;
-        }
-
+        /* Reset & Base Styles */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        :root {
+            --primary: #00f3ff;
+            --primary-dark: #00a8b5;
+            --secondary: #9d00ff;
+            --accent: #ff00c8;
+            --bg-primary: #050505;
+            --bg-secondary: #0a0a0a;
+            --bg-glass: rgba(10, 10, 15, 0.7);
+            --text-primary: #f0f0f0;
+            --text-dim: #a0a0b0;
+            --text-code: #e3e3e3;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(0, 243, 255, 0.3);
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --card-bg: rgba(20, 20, 30, 0.4);
+            --success: #00ff9d;
+            --warning: #ff9d00;
+            --danger: #ff006a;
+            --transition-smooth: cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
         body {
-            background-color: #f9fafb;
-            color: var(--dark);
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
         }
 
         /* Animated Grid Background */
@@ -43,657 +55,691 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
-                linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: -1;
-            opacity: 0.7;
+            z-index: -2;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(9, 0, 59, 0.15) 0%, transparent 30%),
+                radial-gradient(circle at 80% 70%, rgba(59, 0, 59, 0.15) 0%, transparent 30%),
+                linear-gradient(var(--bg-primary), var(--bg-primary));
         }
 
-        /* Modern Header Navbar */
-        .navbar {
-            background-color: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--gray-light);
-            padding: 0.75rem 1.5rem;
-            position: sticky;
+        .grid-bg::before {
+            content: '';
+            position: absolute;
             top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% {
+                transform: translate(0, 0);
+            }
+            100% {
+                transform: translate(50px, 50px);
+            }
+        }
+
+        /* Floating Navbar */
+        .navbar {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 800px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px 24px;
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            z-index: 1000;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(0, 243, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: all 0.4s ease;
+        }
+
+        .navbar.scrolled {
+            top: 10px;
+            padding: 12px 24px;
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(0, 243, 255, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
         .nav-content {
-            max-width: 1200px;
-            margin: 0 auto;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            justify-content: center;
+            gap: 32px;
         }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: var(--dark);
+        .navbar a {
+            color: var(--text-dim);
             text-decoration: none;
-        }
-
-        .logo-icon {
-            color: var(--primary);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--gray);
-            font-weight: 500;
-            padding: 0.5rem 0;
+            font-weight: 600;
+            font-size: 16px;
+            letter-spacing: -0.3px;
+            padding: 8px 16px;
+            border-radius: 12px;
+            transition: all 0.3s var(--transition-smooth);
             position: relative;
-            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .nav-links a:hover {
-            color: var(--primary);
-        }
-
-        .nav-links a.active {
-            color: var(--primary);
-        }
-
-        .nav-links a.active::after {
+        .navbar a::before {
             content: '';
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background-color: var(--primary);
-            border-radius: 2px;
-        }
-
-        .upload-btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.625rem 1.5rem;
-            border-radius: var(--border-radius);
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: var(--transition);
-            text-decoration: none;
-        }
-
-        .upload-btn:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3);
-        }
-
-        /* Hamburger Menu (Mobile) */
-        .hamburger-menu {
-            display: none;
-            flex-direction: column;
-            justify-content: space-between;
-            width: 30px;
-            height: 20px;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-            z-index: 10;
-        }
-
-        .hamburger-menu span {
-            width: 100%;
-            height: 3px;
-            background-color: var(--dark);
-            border-radius: 2px;
-            transition: var(--transition);
-            transform-origin: left center;
-        }
-
-        .hamburger-menu.active span:nth-child(1) {
-            transform: rotate(45deg);
-        }
-
-        .hamburger-menu.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .hamburger-menu.active span:nth-child(3) {
-            transform: rotate(-45deg);
-        }
-
-        /* Mobile Menu */
-        .mobile-menu {
-            position: fixed;
             top: 0;
-            right: -100%;
-            width: 280px;
-            height: 100vh;
-            background-color: white;
-            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
-            padding: 5rem 2rem 2rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            transition: var(--transition);
-            z-index: 99;
-        }
-
-        .mobile-menu.active {
+            left: 0;
             right: 0;
+            bottom: 0;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(157, 0, 255, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
         }
 
-        .mobile-menu a {
-            text-decoration: none;
-            color: var(--gray);
-            font-weight: 500;
-            font-size: 1.1rem;
-            padding: 0.75rem 1rem;
-            border-radius: var(--border-radius);
-            transition: var(--transition);
-        }
-
-        .mobile-menu a:hover {
-            background-color: rgba(59, 130, 246, 0.08);
+        .navbar a:hover {
             color: var(--primary);
+            transform: translateY(-2px);
         }
 
-        .mobile-menu a.active {
-            background-color: rgba(59, 130, 246, 0.12);
+        .navbar a:hover::before {
+            opacity: 1;
+        }
+
+        .navbar a.active {
             color: var(--primary);
-        }
-
-        .mobile-upload-btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.875rem 1.5rem;
-            border-radius: var(--border-radius);
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            transition: var(--transition);
-            text-decoration: none;
-            margin-top: 1rem;
+            background: rgba(0, 243, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
         }
 
         /* Main Container */
         .container {
             max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1.5rem;
+            margin: 0 auto;
+            padding: 120px 20px 60px;
+            width: 100%;
         }
 
+        /* Header */
         header {
-            margin-bottom: 3rem;
+            margin-bottom: 60px;
             text-align: center;
         }
 
-        h1 {
-            font-size: 2.75rem;
-            letter-spacing: -1px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        header h1 {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -2px;
+            margin-bottom: 16px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 0.75rem;
+            color: transparent;
+            position: relative;
+            display: inline-block;
         }
 
-        .subtitle {
-            color: var(--gray);
-            font-size: 1.125rem;
+        header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), transparent);
+            border-radius: 2px;
+        }
+
+        header p {
+            color: var(--text-dim);
+            font-size: 18px;
+            font-weight: 400;
             max-width: 600px;
             margin: 0 auto;
             line-height: 1.6;
         }
 
-        /* Snippet List */
+        /* Snippet List Container */
         #snippet-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
+            gap: 24px;
+            margin-top: 20px;
         }
 
+        /* Snippet Cards */
         .snippet-card {
-            background-color: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            padding: 1.5rem;
-            transition: var(--transition);
-            border: 1px solid var(--gray-light);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            transition: all 0.4s var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 10px 30px var(--shadow-color),
+                0 0 0 1px rgba(255, 255, 255, 0.03);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .snippet-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
         }
 
         .snippet-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--border-glow);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.7),
+                0 0 30px rgba(0, 243, 255, 0.15),
+                0 0 0 1px rgba(0, 243, 255, 0.2);
         }
 
-        .snippet-header {
+        .snippet-card-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 1rem;
+            margin-bottom: 20px;
         }
 
         .snippet-title {
-            font-size: 1.25rem;
+            font-size: 20px;
             font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
         }
 
         .snippet-language {
             display: inline-block;
-            background-color: rgba(59, 130, 246, 0.1);
+            padding: 6px 12px;
+            background: rgba(0, 243, 255, 0.1);
             color: var(--primary);
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.875rem;
+            font-size: 12px;
             font-weight: 600;
-        }
-
-        .snippet-date {
-            color: var(--gray);
-            font-size: 0.875rem;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            font-family: 'Geist Mono', monospace;
         }
 
         .snippet-description {
-            color: var(--gray);
-            line-height: 1.5;
-            margin-bottom: 1.25rem;
+            color: var(--text-dim);
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            flex-grow: 1;
         }
 
-        .snippet-footer {
+        .snippet-code-container {
+            background: rgba(10, 10, 15, 0.8);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .snippet-code-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 32px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px 12px 0 0;
+        }
+
+        .snippet-code {
+            font-family: 'Geist Mono', monospace;
+            font-size: 14px;
+            color: var(--text-code);
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* VS Code-like Syntax Highlighting */
+        .snippet-code .keyword {
+            color: #ff79c6;
+            font-weight: 500;
+        }
+
+        .snippet-code .function {
+            color: #50fa7b;
+        }
+
+        .snippet-code .string {
+            color: #f1fa8c;
+        }
+
+        .snippet-code .comment {
+            color: #6272a4;
+            font-style: italic;
+        }
+
+        .snippet-code .number {
+            color: #bd93f9;
+        }
+
+        .snippet-code .operator {
+            color: #ff79c6;
+        }
+
+        .snippet-code .variable {
+            color: #8be9fd;
+        }
+
+        .snippet-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: 1rem;
-            border-top: 1px solid var(--gray-light);
+            font-size: 13px;
+            color: var(--text-dim);
+            padding-top: 18px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .snippet-author {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--gray);
-            font-size: 0.875rem;
+        .snippet-date {
+            font-family: 'Geist Mono', monospace;
         }
 
         .snippet-actions {
             display: flex;
-            gap: 0.5rem;
+            gap: 12px;
         }
 
-        .action-btn {
-            background: none;
-            border: none;
-            color: var(--gray);
+        .snippet-actions button {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-dim);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
             cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 6px;
-            transition: var(--transition);
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 6px;
         }
 
-        .action-btn:hover {
-            background-color: rgba(59, 130, 246, 0.08);
+        .snippet-actions button:hover {
+            background: rgba(0, 243, 255, 0.1);
             color: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
         }
 
-        .loading {
-            text-align: center;
-            padding: 3rem;
-            color: var(--gray);
+        /* Loading State */
+        #snippet-list:empty,
+        #snippet-list p {
             grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-dim);
+            font-size: 18px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px dashed var(--border-color);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
-        .loading-spinner {
-            display: inline-block;
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(59, 130, 246, 0.2);
-            border-radius: 50%;
-            border-top-color: var(--primary);
-            animation: spin 1s ease-in-out infinite;
-            margin-bottom: 1rem;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
+        /* Empty State */
         .empty-state {
-            text-align: center;
-            padding: 4rem 2rem;
             grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 20px;
         }
 
-        .empty-icon {
-            font-size: 4rem;
-            color: var(--gray-light);
-            margin-bottom: 1.5rem;
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: var(--text-dim);
+            opacity: 0.5;
         }
 
         .empty-state h3 {
-            font-size: 1.5rem;
-            color: var(--dark);
-            margin-bottom: 0.5rem;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text-primary);
         }
 
         .empty-state p {
-            color: var(--gray);
+            color: var(--text-dim);
             max-width: 400px;
-            margin: 0 auto 1.5rem;
+            margin: 0 auto 30px;
+            line-height: 1.6;
         }
 
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 2rem;
-            color: var(--gray);
-            font-size: 0.875rem;
-            border-top: 1px solid var(--gray-light);
-            margin-top: 2rem;
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 992px) {
-            h1 {
-                font-size: 2.25rem;
-            }
-            
-            #snippet-list {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            }
-        }
-
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .nav-links {
-                display: none;
+            .navbar {
+                top: 10px;
+                width: calc(100% - 20px);
+                padding: 12px 16px;
             }
-            
-            .hamburger-menu {
-                display: flex;
+
+            .nav-content {
+                gap: 16px;
             }
-            
-            h1 {
-                font-size: 2rem;
+
+            .navbar a {
+                padding: 8px 12px;
+                font-size: 15px;
             }
-            
+
             .container {
-                margin: 1.5rem auto;
+                padding: 100px 16px 40px;
             }
-            
+
+            header h1 {
+                font-size: 36px;
+                letter-spacing: -1.5px;
+            }
+
+            header p {
+                font-size: 16px;
+            }
+
             #snippet-list {
                 grid-template-columns: 1fr;
-                gap: 1rem;
+                gap: 20px;
             }
-            
+
             .snippet-card {
-                padding: 1.25rem;
+                padding: 20px;
             }
         }
 
-        @media (max-width: 480px) {
-            .navbar {
-                padding: 0.75rem 1rem;
+        @media (min-width: 769px) and (max-width: 1024px) {
+            #snippet-list {
+                grid-template-columns: repeat(2, 1fr);
             }
-            
-            .container {
-                padding: 0 1rem;
+        }
+
+        @media (min-width: 1025px) {
+            #snippet-list {
+                grid-template-columns: repeat(3, 1fr);
             }
-            
-            h1 {
-                font-size: 1.75rem;
-            }
-            
-            .subtitle {
-                font-size: 1rem;
-            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(10, 10, 15, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 243, 255, 0.3);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 243, 255, 0.5);
         }
     </style>
 </head>
 <body>
     <div class="grid-bg"></div>
-    
-    <!-- Modern Header Navbar -->
-    <nav class="navbar">
+    <nav class="navbar" id="navbar">
         <div class="nav-content">
-            <a href="index.html" class="logo">
-                <i class="fas fa-dolphin logo-icon"></i>
-                DolphinVault
+            <a href="index.html" class="active">
+                <i data-lucide="home"></i>
+                Home
             </a>
-            
-            <!-- Desktop Navigation -->
-            <div class="nav-links">
-                <a href="index.html" class="active">Home</a>
-                <a href="upload.html" class="upload-btn">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    Upload Snippet
-                </a>
-            </div>
-            
-            <!-- Hamburger Menu Button (Mobile) -->
-            <button class="hamburger-menu" id="hamburger-btn">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
+            <a href="upload.html">
+                <i data-lucide="upload"></i>
+                Upload
+            </a>
         </div>
     </nav>
-    
-    <!-- Mobile Menu -->
-    <div class="mobile-menu" id="mobile-menu">
-        <a href="index.html" class="active">Home</a>
-        <a href="upload.html" class="mobile-upload-btn">
-            <i class="fas fa-cloud-upload-alt"></i>
-            Upload Snippet
-        </a>
-    </div>
 
     <div class="container">
         <header>
             <h1>Code Library</h1>
-            <p class="subtitle">Daftar snippet kode yang telah diunggah. Temukan dan gunakan kembali kode untuk mempercepat pengembangan Anda.</p>
+            <p>Daftar snippet kode yang telah diunggah. Temukan dan gunakan kembali kode terbaik Anda.</p>
         </header>
 
         <div id="snippet-list">
-            <!-- Snippet cards will be loaded here -->
-            <div class="loading">
-                <div class="loading-spinner"></div>
-                <p>Memuat data dari database...</p>
-            </div>
+            <p>Memuat data dari database...</p>
         </div>
-        
-        <footer>
-            <p>&copy; 2023 DolphinVault. All rights reserved. | Built with <i class="fas fa-heart" style="color: #ef4444;"></i> for developers</p>
-        </footer>
     </div>
 
     <script>
-        // Mobile menu toggle
-        const hamburgerBtn = document.getElementById('hamburger-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
+        // Inisialisasi Lucide Icons
+        lucide.createIcons();
         
-        hamburgerBtn.addEventListener('click', () => {
-            hamburgerBtn.classList.toggle('active');
-            mobileMenu.classList.toggle('active');
-        });
-        
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!hamburgerBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
-                hamburgerBtn.classList.remove('active');
-                mobileMenu.classList.remove('active');
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
             }
         });
         
-        // Close mobile menu when clicking a link
-        const mobileLinks = document.querySelectorAll('.mobile-menu a');
-        mobileLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                hamburgerBtn.classList.remove('active');
-                mobileMenu.classList.remove('active');
-            });
-        });
+        // Supabase initialization (gunakan ID proyek Anda)
+        const supabaseUrl = 'https://your-project.supabase.co';
+        const supabaseKey = 'your-anon-key';
         
-        // Load snippets (simulated data)
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                // Simulate loading data from database
-                const snippetList = document.getElementById('snippet-list');
-                
-                // Sample data
-                const snippets = [
-                    {
-                        id: 1,
-                        title: "React useEffect Cleanup",
-                        language: "JavaScript",
-                        description: "Contoh penggunaan cleanup function di React useEffect untuk menghindari memory leak.",
-                        date: "2 hari yang lalu",
-                        author: "Ahmad Fauzi"
-                    },
-                    {
-                        id: 2,
-                        title: "Python Data Validation",
-                        language: "Python",
-                        description: "Fungsi validasi data dengan Pydantic untuk memastikan integritas data input.",
-                        date: "5 hari yang lalu",
-                        author: "Siti Nurhaliza"
-                    },
-                    {
-                        id: 3,
-                        title: "Responsive Navbar CSS",
-                        language: "CSS",
-                        description: "Navbar responsif dengan menu hamburger menggunakan CSS murni tanpa JavaScript.",
-                        date: "1 minggu yang lalu",
-                        author: "Budi Santoso"
-                    },
-                    {
-                        id: 4,
-                        title: "Express.js Error Handler",
-                        language: "JavaScript",
-                        description: "Middleware penanganan error terpusat untuk aplikasi Express.js dengan logging.",
-                        date: "2 minggu yang lalu",
-                        author: "Dewi Lestari"
-                    },
-                    {
-                        id: 5,
-                        title: "SQL Query Optimization",
-                        language: "SQL",
-                        description: "Teknik optimisasi query SQL dengan indexing dan EXPLAIN ANALYZE.",
-                        date: "3 minggu yang lalu",
-                        author: "Rizky Pratama"
-                    },
-                    {
-                        id: 6,
-                        title: "Dark Mode Toggle",
-                        language: "JavaScript",
-                        description: "Implementasi toggle dark mode dengan localStorage untuk menyimpan preferensi user.",
-                        date: "1 bulan yang lalu",
-                        author: "Maya Indah"
-                    }
-                ];
-                
-                // Clear loading message
-                snippetList.innerHTML = '';
-                
-                // If no snippets
-                if (snippets.length === 0) {
-                    snippetList.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-code empty-icon"></i>
-                            <h3>Belum ada snippet</h3>
-                            <p>Unggah snippet kode pertama Anda dan bagikan dengan komunitas developer.</p>
-                            <a href="upload.html" class="upload-btn">
-                                <i class="fas fa-cloud-upload-alt"></i>
-                                Upload Snippet Pertama
-                            </a>
+        // Inisialisasi Supabase client
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // Contoh data untuk preview (akan diganti dengan data dari Supabase)
+        const sampleSnippets = [
+            {
+                id: 1,
+                title: "Authentication Helper",
+                description: "Fungsi helper untuk validasi token JWT dengan error handling yang komprehensif.",
+                language: "JavaScript",
+                code: "function validateToken(token) {\n  // Validasi struktur token\n  if (!token || typeof token !== 'string') {\n    throw new Error('Invalid token format');\n  }\n  \n  // Decode token\n  const parts = token.split('.');\n  if (parts.length !== 3) {\n    throw new Error('Invalid JWT structure');\n  }\n  \n  // Verifikasi signature (contoh sederhana)\n  const payload = JSON.parse(atob(parts[1]));\n  const now = Math.floor(Date.now() / 1000);\n  \n  if (payload.exp && payload.exp < now) {\n    throw new Error('Token has expired');\n  }\n  \n  return payload;\n}",
+                created_at: "2023-10-15"
+            },
+            {
+                id: 2,
+                title: "Database Connection",
+                description: "Konfigurasi koneksi database dengan connection pooling dan retry logic.",
+                language: "Python",
+                code: "import psycopg2\nfrom psycopg2 import pool\nfrom datetime import datetime\nimport time\n\nclass DatabaseConnection:\n    def __init__(self, min_conn=1, max_conn=10):\n        self.connection_pool = None\n        self.min_conn = min_conn\n        self.max_conn = max_conn\n        \n    def create_pool(self, dbname, user, password, host):\n        try:\n            self.connection_pool = psycopg2.pool.SimpleConnectionPool(\n                self.min_conn,\n                self.max_conn,\n                dbname=dbname,\n                user=user,\n                password=password,\n                host=host\n            )\n            print(f\"[{datetime.now()}] Connection pool created successfully\")\n        except Exception as e:\n            print(f\"Error creating connection pool: {e}\")\n            raise\n\n    def get_connection(self):\n        if self.connection_pool:\n            return self.connection_pool.getconn()\n        raise Exception(\"Connection pool not initialized\")\n\n    def release_connection(self, connection):\n        if self.connection_pool:\n            self.connection_pool.putconn(connection)",
+                created_at: "2023-10-10"
+            },
+            {
+                id: 3,
+                title: "Response Formatter",
+                description: "Utility untuk format response API yang konsisten dengan status code dan metadata.",
+                language: "TypeScript",
+                code: "interface ApiResponse<T> {\n  success: boolean;\n  data?: T;\n  error?: {\n    code: string;\n    message: string;\n    details?: any;\n  };\n  metadata?: {\n    timestamp: string;\n    version: string;\n    pagination?: {\n      page: number;\n      limit: number;\n      total: number;\n      totalPages: number;\n    };\n  };\n}\n\nexport class ResponseFormatter {\n  static success<T>(data: T, metadata?: any): ApiResponse<T> {\n    return {\n      success: true,\n      data,\n      metadata: {\n        timestamp: new Date().toISOString(),\n        version: '1.0',\n        ...metadata\n      }\n    };\n  }\n\n  static error(code: string, message: string, details?: any): ApiResponse<null> {\n    return {\n      success: false,\n      error: { code, message, details },\n      metadata: {\n        timestamp: new Date().toISOString(),\n        version: '1.0'\n      }\n    };\n  }\n}",
+                created_at: "2023-10-05"
+            }
+        ];
+        
+        // Fungsi untuk menampilkan snippet
+        function displaySnippets(snippets) {
+            const snippetList = document.getElementById('snippet-list');
+            
+            if (!snippets || snippets.length === 0) {
+                snippetList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i data-lucide="code-2"></i>
                         </div>
-                    `;
-                    return;
-                }
-                
-                // Render snippets
-                snippets.forEach(snippet => {
-                    const snippetCard = document.createElement('div');
-                    snippetCard.className = 'snippet-card';
-                    
-                    // Determine icon based on language
-                    let languageIcon = 'fa-code';
-                    if (snippet.language === 'JavaScript') languageIcon = 'fa-js';
-                    if (snippet.language === 'Python') languageIcon = 'fa-python';
-                    if (snippet.language === 'CSS') languageIcon = 'fa-css3-alt';
-                    if (snippet.language === 'SQL') languageIcon = 'fa-database';
-                    
-                    snippetCard.innerHTML = `
-                        <div class="snippet-header">
-                            <div>
-                                <h3 class="snippet-title">${snippet.title}</h3>
-                                <span class="snippet-language">
-                                    <i class="fab ${languageIcon}"></i> ${snippet.language}
-                                </span>
-                            </div>
-                            <span class="snippet-date">${snippet.date}</span>
+                        <h3>Tidak Ada Snippet</h3>
+                        <p>Belum ada snippet kode yang diunggah. Mulailah dengan mengunggah kode pertama Anda.</p>
+                        <a href="upload.html" style="display: inline-block; padding: 12px 24px; background: linear-gradient(90deg, var(--primary), var(--secondary)); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; transition: transform 0.3s var(--transition-smooth);">Upload Snippet Pertama</a>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+            
+            snippetList.innerHTML = snippets.map(snippet => `
+                <div class="snippet-card">
+                    <div class="snippet-card-header">
+                        <div>
+                            <h3 class="snippet-title">${snippet.title}</h3>
+                            <span class="snippet-language">${snippet.language}</span>
                         </div>
-                        <p class="snippet-description">${snippet.description}</p>
-                        <div class="snippet-footer">
-                            <div class="snippet-author">
-                                <i class="fas fa-user-circle"></i>
-                                ${snippet.author}
-                            </div>
-                            <div class="snippet-actions">
-                                <button class="action-btn" title="Salin kode">
-                                    <i class="fas fa-copy"></i>
-                                </button>
-                                <button class="action-btn" title="Lihat detail">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="action-btn" title="Unduh">
-                                    <i class="fas fa-download"></i>
-                                </button>
-                            </div>
+                    </div>
+                    <p class="snippet-description">${snippet.description}</p>
+                    <div class="snippet-code-container">
+                        <pre class="snippet-code">${escapeHtml(snippet.code)}</pre>
+                    </div>
+                    <div class="snippet-meta">
+                        <span class="snippet-date">${formatDate(snippet.created_at)}</span>
+                        <div class="snippet-actions">
+                            <button class="copy-btn" data-code="${escapeHtml(snippet.code)}">
+                                <i data-lucide="copy"></i>
+                                Copy
+                            </button>
+                            <button class="view-btn">
+                                <i data-lucide="external-link"></i>
+                                View
+                            </button>
                         </div>
-                    `;
-                    
-                    snippetList.appendChild(snippetCard);
-                });
-                
-                // Add copy functionality
-                document.querySelectorAll('.action-btn .fa-copy').forEach((btn, index) => {
-                    btn.closest('.action-btn').addEventListener('click', () => {
-                        // In real implementation, this would copy the actual code
-                        const originalText = btn.closest('.action-btn').innerHTML;
-                        btn.closest('.action-btn').innerHTML = '<i class="fas fa-check"></i>';
-                        btn.closest('.action-btn').style.color = 'var(--primary)';
+                    </div>
+                </div>
+            `).join('');
+            
+            // Tambahkan event listeners untuk tombol copy
+            document.querySelectorAll('.copy-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const code = this.getAttribute('data-code');
+                    navigator.clipboard.writeText(code).then(() => {
+                        // Feedback visual
+                        const originalText = this.innerHTML;
+                        this.innerHTML = '<i data-lucide="check"></i> Copied!';
+                        this.style.background = 'rgba(0, 255, 157, 0.1)';
+                        this.style.color = 'var(--success)';
+                        this.style.borderColor = 'var(--success)';
                         
                         setTimeout(() => {
-                            btn.closest('.action-btn').innerHTML = originalText;
-                            btn.closest('.action-btn').style.color = '';
+                            this.innerHTML = originalText;
+                            this.style.background = '';
+                            this.style.color = '';
+                            this.style.borderColor = '';
+                            lucide.createIcons();
                         }, 2000);
                     });
                 });
+            });
+            
+            // Highlight syntax sederhana
+            applySyntaxHighlighting();
+            
+            // Inisialisasi ulang ikon Lucide
+            lucide.createIcons();
+        }
+        
+        // Fungsi untuk escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Fungsi untuk format tanggal
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+        
+        // Fungsi untuk syntax highlighting sederhana
+        function applySyntaxHighlighting() {
+            document.querySelectorAll('.snippet-code').forEach(codeBlock => {
+                let code = codeBlock.textContent;
                 
-            }, 1500); // Simulate network delay
+                // Highlight untuk JavaScript/TypeScript
+                code = code.replace(/\b(function|const|let|var|if|else|for|while|return|class|export|import|from|default)\b/g, '<span class="keyword">$1</span>');
+                code = code.replace(/\b(console|log|error|warn|info)\b/g, '<span class="function">$1</span>');
+                code = code.replace(/(".*?"|'.*?'|`.*?`)/g, '<span class="string">$1</span>');
+                code = code.replace(/\/\/.*/g, '<span class="comment">$&</span>');
+                code = code.replace(/\b(\d+)\b/g, '<span class="number">$1</span>');
+                code = code.replace(/[=+\-*/<>!&|^%~]+/g, '<span class="operator">$&</span>');
+                
+                // Highlight untuk Python
+                code = code.replace(/\b(def|class|import|from|as|if|elif|else|for|while|try|except|finally|with|return|yield|lambda)\b/g, '<span class="keyword">$1</span>');
+                code = code.replace(/\b(print|len|str|int|float|list|dict|tuple|set|range|enumerate)\b/g, '<span class="function">$1</span>');
+                
+                codeBlock.innerHTML = code;
+            });
+        }
+        
+        // Simulasi loading data
+        document.addEventListener('DOMContentLoaded', function() {
+            // Untuk demo, gunakan data contoh
+            // Dalam implementasi nyata, ambil data dari Supabase
+            setTimeout(() => {
+                displaySnippets(sampleSnippets);
+            }, 1000);
+            
+            // Kode untuk mengambil data dari Supabase:
+            /*
+            async function fetchSnippets() {
+                try {
+                    const { data, error } = await supabase
+                        .from('snippets')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+                    
+                    if (error) throw error;
+                    
+                    displaySnippets(data);
+                } catch (error) {
+                    console.error('Error fetching snippets:', error);
+                    document.getElementById('snippet-list').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i data-lucide="alert-circle"></i>
+                            </div>
+                            <h3>Error Memuat Data</h3>
+                            <p>Terjadi kesalahan saat memuat data dari database. Silakan coba lagi nanti.</p>
+                        </div>
+                    `;
+                    lucide.createIcons();
+                }
+            }
+            
+            fetchSnippets();
+            */
         });
     </script>
 </body>
