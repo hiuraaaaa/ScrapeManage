@@ -1,8 +1,8 @@
 // ==========================================
 // KONFIGURASI SUPABASE
 // ==========================================
-const SB_URL = "https://sjqawvdabdliehzxqlbz.supabase.co"; // Ganti dengan Project URL kamu
-const SB_KEY = "sb_publishable__fhxF1Y__FsdwpsYDZJ0Qg_qyylrLzt"; // Ganti dengan Anon Public Key kamu
+const SB_URL = "https://sjqawvdabdliehzxqlbz.supabase.co"; 
+const SB_KEY = "sb_publishable__fhxF1Y__FsdwpsYDZJ0Qg_qyylrLzt"; 
 const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
 // ==========================================
@@ -10,12 +10,11 @@ const _supabase = supabase.createClient(SB_URL, SB_KEY);
 // ==========================================
 function checkAuth() {
     const pass = document.getElementById('adminPass').value;
-    // Password admin untuk masuk ke panel upload
     if (pass === "admin123") { 
         localStorage.setItem('isLoggedIn', 'true');
         location.reload();
     } else {
-        alert("Password Salah! Akses ditolak.");
+        alert("ACCESS DENIED: Password Incorrect!");
     }
 }
 
@@ -29,7 +28,7 @@ function logout() {
 // ==========================================
 async function loadSnippets() {
     const listDiv = document.getElementById('snippet-list');
-    if (!listDiv) return; // Hanya jalankan jika ada elemennya (di index.html)
+    if (!listDiv) return; 
 
     const { data, error } = await _supabase
         .from('snippets')
@@ -38,32 +37,49 @@ async function loadSnippets() {
 
     if (error) {
         console.error(error);
-        listDiv.innerHTML = `<p style="color:red; text-align:center;">Gagal memuat data database.</p>`;
+        listDiv.innerHTML = `<p style="color:#ff4d4d; text-align:center; grid-column: 1/-1;">System Error: Failed to fetch database.</p>`;
         return;
     }
 
     if (data.length === 0) {
-        listDiv.innerHTML = `<p style="color:#555; text-align:center; margin-top:50px;">Belum ada snippet kode yang tersedia.</p>`;
+        listDiv.innerHTML = `<p style="color:#555; text-align:center; grid-column: 1/-1; margin-top:50px;">Vault is empty. No snippets found.</p>`;
         return;
     }
 
-    // Merender list kartu yang bisa diklik menuju detail.html
-    listDiv.innerHTML = data.map(item => `
-        <a href="detail.html?id=${item.id}" style="text-decoration: none; color: inherit;">
+    // Merender kartu dengan struktur Compact Professional
+    listDiv.innerHTML = data.map(item => {
+        // Ambil preview kode (80 karakter pertama)
+        const codePreview = item.code.length > 80 ? item.code.substring(0, 80) + '...' : item.code;
+        
+        return `
             <div class="snippet-card">
-                <div class="icon-wrapper"><i data-lucide="code"></i></div>
-                <div class="snippet-info">
-                    <h3>${item.title}</h3>
-                    <div class="tags">
-                        ${item.tags ? item.tags.split(',').map(t => `<span class="tag">${t.trim()}</span>`).join('') : ''}
+                <div class="tags">
+                    ${item.tags ? item.tags.split(',').map(t => `<span class="tag">${t.trim()}</span>`).join('') : '<span class="tag">CODE</span>'}
+                </div>
+                <h3>${item.title}</h3>
+                <pre><code>${escapeHtml(codePreview)}</code></pre>
+                
+                <div class="snippet-meta">
+                    <span class="date">${new Date(item.created_at).toLocaleDateString()}</span>
+                    <div class="card-actions">
+                        <a href="detail.html?id=${item.id}" class="btn-icon">
+                            <i data-lucide="external-link" style="width:16px; height:16px;"></i>
+                        </a>
                     </div>
                 </div>
             </div>
-        </a>
-    `).join('');
+        `;
+    }).join('');
     
-    // Inisialisasi icon lucide setelah elemen HTML dibuat
+    // Refresh icon Lucide agar muncul
     lucide.createIcons();
+}
+
+// Fungsi bantu untuk mencegah error XSS pada preview kode
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 // ==========================================
@@ -75,13 +91,12 @@ async function handleUpload() {
     const code = document.getElementById('code').value;
 
     if (!title || !code) {
-        return alert("Judul dan Konten Kode wajib diisi!");
+        return alert("Error: Title and Code are mandatory fields!");
     }
 
-    // Animasi loading pada tombol
     const btn = document.querySelector('.btn-primary');
     const originalText = btn.innerText;
-    btn.innerText = "Mengirim...";
+    btn.innerText = "UPLOADING...";
     btn.disabled = true;
 
     const { error } = await _supabase
@@ -89,11 +104,11 @@ async function handleUpload() {
         .insert([{ title, tags, code }]);
 
     if (error) {
-        alert("Gagal Upload: " + error.message);
+        alert("Upload Failed: " + error.message);
         btn.innerText = originalText;
         btn.disabled = false;
     } else {
-        alert("Berhasil! Snippet kamu sudah terbit.");
+        alert("SUCCESS: Snippet published to vault.");
         window.location.href = 'index.html';
     }
 }
@@ -106,7 +121,6 @@ window.onload = function() {
     const loginForm = document.getElementById('loginForm');
     const uploadPanel = document.getElementById('uploadPanel');
     
-    // Logika tampilan untuk halaman upload.html
     if (isLogged === 'true') {
         if (loginForm) loginForm.style.display = 'none';
         if (uploadPanel) uploadPanel.style.display = 'block';
@@ -115,6 +129,5 @@ window.onload = function() {
         if (uploadPanel) uploadPanel.style.display = 'none';
     }
 
-    // Jalankan fungsi load data jika berada di halaman home
     loadSnippets();
 };
