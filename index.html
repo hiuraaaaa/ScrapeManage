@@ -100,34 +100,44 @@
         }
         .hero-content p { color: var(--text-dim); font-size: 0.95rem; max-width: 450px; }
 
-        /* --- Search Bar --- */
-        .search-container {
-            position: relative;
-            margin-bottom: 30px;
-            max-width: 100%;
-        }
+/* --- Perbaikan Search Bar & Icon --- */
+.search-container {
+    position: relative;
+    margin-bottom: 30px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
 
-        .search-container i {
-            position: absolute; left: 15px; top: 50%;
-            transform: translateY(-50%); color: var(--text-dim); width: 18px;
-        }
+.search-container i {
+    position: absolute;
+    left: 18px; /* Geser sedikit ke kanan agar tidak terlalu nempel pinggir */
+    color: var(--text-dim);
+    width: 18px;
+    height: 18px;
+    pointer-events: none; /* Agar klik tembus ke input */
+    z-index: 5; /* Pastikan ikon di atas background input */
+}
 
-        #search-input {
-            width: 100%;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 14px 15px 14px 45px;
-            color: white;
-            font-family: var(--font-main);
-            outline: none;
-            transition: 0.3s;
-        }
+#search-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05); /* Gunakan rgba agar lebih konsisten */
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 14px 15px 14px 48px; /* Padding kiri ditambah (48px) agar teks tidak menabrak ikon */
+    color: white;
+    font-family: var(--font-main);
+    font-size: 0.95rem;
+    outline: none;
+    transition: 0.3s;
+    -webkit-appearance: none; /* Menghilangkan styling bawaan browser */
+}
 
-        #search-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
-        }
+#search-input:focus {
+    border-color: var(--primary);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
+}
 
         /* --- Sidebar & Overlay --- */
         .sidebar {
