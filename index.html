@@ -35,13 +35,93 @@
             min-height: 100vh;
         }
 
+        /* --- PLEXUS/NETWORK BACKGROUND --- */
         .cyber-bg {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1;
             background: 
-                radial-gradient(circle at 5% 5%, rgba(157, 0, 255, 0.05) 0%, transparent 30%),
-                radial-gradient(circle at 95% 95%, rgba(0, 243, 255, 0.05) 0%, transparent 30%);
+                radial-gradient(circle at 10% 10%, rgba(157, 0, 255, 0.05) 0%, transparent 25%),
+                radial-gradient(circle at 90% 90%, rgba(0, 243, 255, 0.05) 0%, transparent 25%),
+                radial-gradient(circle at 50% 50%, rgba(5, 5, 5, 0.8) 0%, rgba(5, 5, 5, 1) 100%);
+            
+            /* Plexus/Network effect */
+            background-image: 
+                /* Horizontal lines */
+                linear-gradient(to right, rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(157, 0, 255, 0.03) 1px, transparent 1px),
+                /* Diagonal lines */
+                linear-gradient(45deg, rgba(0, 243, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(-45deg, rgba(157, 0, 255, 0.02) 1px, transparent 1px);
+            
+            background-size: 
+                40px 40px, /* Grid size */
+                40px 40px,
+                60px 60px, /* Diagonal size */
+                60px 60px;
+            
+            /* Subtle animation untuk smooth movement */
+            animation: plexusMove 40s linear infinite;
+            
+            /* Optimasi untuk performa di mobile */
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            will-change: transform;
+        }
+
+        @keyframes plexusMove {
+            0% {
+                background-position: 
+                    0px 0px,
+                    0px 0px,
+                    0px 0px,
+                    0px 0px;
+            }
+            100% {
+                background-position: 
+                    80px 80px,
+                    80px 80px,
+                    120px 120px,
+                    120px 120px;
+            }
+        }
+
+        /* Reduced motion for accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            .cyber-bg {
+                animation: none;
+            }
+        }
+
+        /* Optimasi khusus untuk Android */
+        @media screen and (max-width: 768px) {
+            .cyber-bg {
+                /* Simplify background untuk performa lebih baik di mobile */
+                background-size: 
+                    60px 60px,
+                    60px 60px,
+                    90px 90px,
+                    90px 90px;
+                
+                /* Slower animation di mobile untuk menghindari lag */
+                animation: plexusMove 60s linear infinite;
+            }
+            
+            /* Disable animation jika device rendah performa */
+            @media (max-width: 480px) and (orientation: portrait) {
+                .cyber-bg {
+                    animation-duration: 80s;
+                }
+            }
+        }
+
+        /* Fallback untuk browser yang tidak support multiple background */
+        @supports not (background-image: linear-gradient(45deg, black, white), radial-gradient(circle, black, white)) {
+            .cyber-bg {
+                background: linear-gradient(135deg, #050505 0%, #0a0a1a 100%);
+            }
         }
 
         /* --- Header --- */
@@ -109,18 +189,17 @@
             align-items: center;
         }
 
-        /* Selektor i dan svg untuk Lucide Icons */
         .search-container i, 
         .search-container svg {
             position: absolute;
             left: 16px;
             top: 50%;
-            transform: translateY(-50%); /* Menengahkan ikon secara vertikal */
+            transform: translateY(-50%);
             color: var(--text-dim);
             width: 18px;
             height: 18px;
             z-index: 10;
-            pointer-events: none; /* Klik tembus ke input */
+            pointer-events: none;
             transition: 0.3s;
         }
 
@@ -129,7 +208,7 @@
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--glass-border);
             border-radius: 12px;
-            padding: 14px 15px 14px 48px; /* Padding kiri luas agar tidak menabrak ikon */
+            padding: 14px 15px 14px 48px;
             color: white;
             font-family: var(--font-main);
             font-size: 0.95rem;
@@ -143,7 +222,6 @@
             box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
         }
         
-        /* Efek ikon saat input fokus */
         #search-input:focus + svg,
         #search-input:focus ~ i {
             color: var(--primary);
@@ -241,6 +319,16 @@
             .hero-content h1 { font-size: 1.6rem; }
             .container { padding: 0 16px; margin-top: 75px; }
             #snippet-list { grid-template-columns: 1fr; }
+            
+            /* Additional optimization for mobile */
+            .cyber-bg {
+                /* Simplify further untuk performa optimal */
+                background-size: 
+                    80px 80px,
+                    80px 80px,
+                    120px 120px,
+                    120px 120px;
+            }
         }
     </style>
 </head>
